@@ -1,6 +1,17 @@
 <table>
     <thead>
         <tr>
+            <th colspan="8" style="font-size:16px; font-weight:bold; text-align:center;">
+                Monitoring GC-PLN Prabayar
+            </th>
+        </tr>
+        <tr>
+            <th colspan="8" style="font-size:11px; font-style:italic; text-align:center;">
+                Timestamp Fasih-SM: {{ $timestamp }} WIB
+            </th>
+        </tr>
+        <tr></tr>
+        <tr>
             <th>Timestamp</th>
             <th>UPI</th>
             <th>UP3</th>
