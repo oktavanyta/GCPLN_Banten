@@ -177,8 +177,8 @@
 </main>
 
 <!-- FOOTER -->
-<footer class="text-center py-4 text-sm text-gray-400">
-    &copy; {{ date('Y') }}. Tim MPTI BPS Provinsi Banten
+<footer class="text-center pb-4 text-sm text-gray-400">
+    &copy; {{ date('Y') }}. BPS Provinsi Banten - Tim Metodologi, Pengolahan, dan Layanan Teknologi Informasi.
 </footer>
 
 <!-- SCRIPT -->
