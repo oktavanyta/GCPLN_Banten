@@ -12,7 +12,11 @@
 </div>
 
 <!-- Grafik Harian -->
-<div class="bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 rounded-2xl shadow-lg border border-gray-100 p-6 mb-10">
+<div class="rounded-2xl shadow-lg border p-6 mb-10
+    bg-gradient-to-br from-gray-100 via-gray-200 to-gray-200
+    dark:from-indigo-50 dark:via-slate-100 dark:to-blue-50
+    border-gray-100 dark:border-slate-200">
+    
     @include('partials.chart-harian')
 </div>
 
@@ -56,7 +60,7 @@
     @if(request('tab', 'prabayar') == 'prabayar')
         <!-- Filter Tanggal Prabayar -->
         <div class="bg-gradient-to-br from-sky-50 via-sky-60 to-gray-50 rounded-2xl shadow border border-t border-sky-60 p-6 mb-2">
-            <form method="GET" action="/" class="grid grid-cols-12 gap-4 items-end">
+            <form method="GET" action="/" class="grid grid-cols-12 gap-4 items-end md:flex-nowrap">
                 <input type="hidden" name="tab" value="prabayar">
 
                 <!-- Tanggal -->
@@ -110,13 +114,13 @@
                 </div>
 
                 <!-- Button -->
-                <div class="col-span-12 md:col-span-2 flex gap-2 mt-2 md:mt-0">
+                <div class="col-span-12 md:col-span-2 flex flex-col md:flex-row gap-2 mt-2 md:mt-0 w-full">
                     <button type="submit" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-semibold shadow transition flex-1">
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-semibold shadow transition w-full md:w-auto flex-1">
                         <span class="inline-block align-middle">Filter</span>
                     </button>
                     <a href="/" 
-                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-xs font-semibold shadow transition flex-1 text-center">
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-xs font-semibold shadow transition w-full md:w-auto flex-1 text-center">
                         Reset
                     </a>
                 </div>
@@ -191,7 +195,7 @@
     @if(request('tab') == 'pascabayar')
         <!-- Filter Tanggal Pascabayar -->
         <div class="bg-gradient-to-br from-teal-50 via-teal-60 to-gray-50 rounded-2xl shadow border border-t border-teal-60 p-6 mb-2">
-            <form method="GET" action="/" class="grid grid-cols-12 gap-4 items-end">
+            <form method="GET" action="/" class="grid grid-cols-12 gap-4 items-end md:flex-nowrap">
                 <input type="hidden" name="tab" value="pascabayar">
 
                 <!-- Tanggal -->
@@ -245,13 +249,13 @@
                 </div>
 
                 <!-- Button -->
-                <div class="col-span-12 md:col-span-2 flex gap-2 mt-2 md:mt-0">
+                <div class="col-span-12 md:col-span-2 flex flex-col md:flex-row gap-2 mt-2 md:mt-0 w-full">
                     <button type="submit" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-semibold shadow transition flex-1">
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-semibold shadow transition w-full md:w-auto flex-1">
                         <span class="inline-block align-middle">Filter</span>
                     </button>
                     <a href="/" 
-                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-xs font-semibold shadow transition flex-1 text-center">
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-xs font-semibold shadow transition w-full md:w-auto flex-1 text-center">
                         Reset
                     </a>
                 </div>

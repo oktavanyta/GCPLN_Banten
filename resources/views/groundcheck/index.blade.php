@@ -129,8 +129,8 @@
             max-width: 220px;
         }
     </style>
-    <div class="bg-white border rounded-xl shadow-sm overflow-hidden">
-        <table class="w-full table-mini">
+    <div class="bg-white border rounded-xl shadow-sm overflow-x-auto">
+        <table class="min-w-[700px] w-full table-mini">
             <thead class="bg-gray-100 text-gray-600">
                 <tr>
                     <th class="timestamp-col">Timestamp</th>

@@ -11,7 +11,6 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-
         // Set default tanggal jika tidak ada di request
         $today = date('Y-m-d');
         $queryParams = $request->all();
@@ -50,7 +49,7 @@ class DashboardController extends Controller
         // PRABAYAR
         // ========================
         $prabayarQuery = (clone $baseQuery)
-            ->whereRaw('LOWER(jenis) = ?', ['prabayar']);
+                        ->where('jenis', 'Prabayar');
 
         if (!empty($queryParams['tanggal_prabayar'])) {
             $prabayarQuery->whereDate('groundchecks.created_at', $queryParams['tanggal_prabayar']);
@@ -70,7 +69,7 @@ class DashboardController extends Controller
         // PASCABAYAR
         // ========================
         $pascabayarQuery = (clone $baseQuery)
-            ->whereRaw('LOWER(jenis) = ?', ['pascabayar']);
+            ->where('jenis', 'Pascabayar');
 
         if (!empty($queryParams['tanggal_pascabayar'])) {
             $pascabayarQuery->whereDate('groundchecks.created_at', $queryParams['tanggal_pascabayar']);
@@ -87,7 +86,21 @@ class DashboardController extends Controller
         // ========================
         // FILTER BERJENJANG
         // ========================
-        $upis = Upi::all();
+
+        // Ambil UPI Banten
+        $defaultUpi = Upi::where('nama', 'Banten')->first();
+
+        // Set default jika belum dipilih
+        if (!$request->filled('upi_id') && $defaultUpi) {
+            $request->merge([
+                'upi_id' => $defaultUpi->id
+            ]);
+        }
+
+        // Filter UPI
+        if ($request->filled('upi_id')) {
+            $upis = Upi::all();
+        } 
 
         // UP3 tergantung UPI
         $up3s = Up3::when($request->upi_id, function ($q) use ($request) {
@@ -99,6 +112,7 @@ class DashboardController extends Controller
             $q->where('up3_id', $request->up3_id);
         })->get();
 
+        $tab = $request->get('tab', 'prabayar');
         // ========================
         // CHART (tetap sama)
         // ========================
@@ -112,22 +126,80 @@ class DashboardController extends Controller
 
         $chartLabels = collect($dateRange)->map(fn($d) => date('d M', strtotime($d)));
 
-        $chartPrabayar = collect($dateRange)->map(function($d) {
-            return Groundcheck::whereDate('groundchecks.created_at', $d)
-                ->whereRaw('LOWER(jenis) = ?', ['prabayar'])
-                ->sum('submitted');
+        // Chart mengikuti filter UP3, ULP
+        $chartPrabayarData = collect($dateRange)->map(function($d) use ($request, $tab) {
+
+            $query = Groundcheck::query()
+                ->whereBetween('created_at', [$d.' 00:00:00', $d.' 23:59:59'])
+                ->where('jenis', 'Prabayar');
+
+            // FILTER HANYA JIKA TAB PRABAYAR
+            if ($tab === 'prabayar') {
+                if ($request->filled('up3_id')) {
+                    $query->whereHas('ulp.up3', fn($q) => $q->where('id', $request->up3_id));
+                }
+                if ($request->filled('ulp_id')) {
+                    $query->whereHas('ulp', fn($q) => $q->where('id', $request->ulp_id));
+                }
+            }
+
+            $result = $query->selectRaw('SUM(open) as o, SUM(submitted) as s, SUM(rejected) as r')->first();
+
+            return [
+                'open' => $result->o ?? 0,
+                'submitted' => $result->s ?? 0,
+                'rejected' => $result->r ?? 0,
+            ];
         });
 
-        $chartPascabayar = collect($dateRange)->map(function($d) {
-            return Groundcheck::whereDate('groundchecks.created_at', $d)
-                ->whereRaw('LOWER(jenis) = ?', ['pascabayar'])
-                ->sum('submitted');
+        $chartOpenPrabayar = $chartPrabayarData->pluck('open');
+        $chartPrabayar = $chartPrabayarData->pluck('submitted');
+        $chartRejectedPrabayar = $chartPrabayarData->pluck('rejected');
+
+        $chartPascabayarData = collect($dateRange)->map(function($d) use ($request, $tab) {
+
+            $query = Groundcheck::query()
+                ->whereBetween('created_at', [$d.' 00:00:00', $d.' 23:59:59'])
+                ->where('jenis', 'Pascabayar');
+
+            // FILTER HANYA JIKA TAB PASCABAYAR
+            if ($tab === 'pascabayar') {
+                if ($request->filled('up3_id')) {
+                    $query->whereHas('ulp.up3', fn($q) => $q->where('id', $request->up3_id));
+                }
+                if ($request->filled('ulp_id')) {
+                    $query->whereHas('ulp', fn($q) => $q->where('id', $request->ulp_id));
+                }
+            }
+
+            $result = $query->selectRaw('SUM(open) as o, SUM(submitted) as s, SUM(rejected) as r')->first();
+
+            return [
+                'open' => $result->o ?? 0,
+                'submitted' => $result->s ?? 0,
+                'rejected' => $result->r ?? 0,
+            ];
         });
+
+        $chartOpenPascabayar = $chartPascabayarData->pluck('open');
+        $chartPascabayar = $chartPascabayarData->pluck('submitted');
+        $chartRejectedPascabayar = $chartPascabayarData->pluck('rejected');
 
         $chartTotal = $chartPrabayar->zip($chartPascabayar)->map(function($pair) {
             return $pair[0] + $pair[1];
         });
 
+        $isFiltered = $request->filled('up3_id') || $request->filled('ulp_id');
+        $selectedUp3 = null;
+        $selectedUlp = null;
+
+        if ($request->filled('up3_id')) {
+            $selectedUp3 = \App\Models\Up3::find($request->up3_id)?->nama;
+        }
+
+        if ($request->filled('ulp_id')) {
+            $selectedUlp = \App\Models\Ulp::find($request->ulp_id)?->nama;
+        }
         return view('dashboard', compact(
             'prabayar',
             'pascabayar',
@@ -137,7 +209,15 @@ class DashboardController extends Controller
             'chartLabels',
             'chartPrabayar',
             'chartPascabayar',
-            'chartTotal'
+            'chartRejectedPrabayar',
+            'chartRejectedPascabayar',
+            'chartTotal',
+            'chartOpenPrabayar',
+            'chartOpenPascabayar',
+            'isFiltered',
+            'tab',
+            'selectedUp3',
+            'selectedUlp',
         ));
     }
 }

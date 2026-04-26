@@ -3,7 +3,8 @@
 @section('title', 'Ubah Data')
 
 @section('content')
-<div class="max-full mx-auto">
+
+<div class="max-w-full mx-auto px-2 sm:px-6 lg:px-8">
 
     <div class="flex items-center justify-between mb-6">
         <div>
@@ -15,13 +16,13 @@
         </a>
     </div>
 
-    <form action="{{ route('groundcheck.update', $data->id) }}" method="POST">
+    <form action="{{ route('groundcheck.update', $data->id) }}" method="POST" class="w-full">
         @csrf
         @method('PUT')
 
         <div class="bg-white border rounded-xl shadow-sm overflow-hidden mb-6">
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
+            <div class="overflow-x-auto w-full">
+                <table class="min-w-[600px] w-full text-sm">
                     <thead class="bg-gray-100 text-gray-600">
                         <tr>
                             <th class="p-3 text-left w-28">Timestamp</th>
@@ -41,17 +42,17 @@
                             <td class="p-3 text-gray-700">{{ $data->ulp->up3->upi->nama ?? '-' }}</td>
                             <td class="p-3 text-gray-700">{{ $data->ulp->up3->nama ?? '-' }}</td>
                             <td class="p-3 font-medium">[{{ $data->ulp->kode }}] <span class="text-gray-500">{{ $data->ulp->nama }}</span></td>
-                            <td class="p-2"><input type="text" name="open" id="input-open" value="{{ old('open', $data->open) }}" class="w-32 border rounded-md p-1 text-center text-sm mx-auto block"></td>
-                            <td class="p-2"><input type="text" name="submitted" id="input-submitted" value="{{ old('submitted', $data->submitted) }}" class="w-32 border rounded-md p-1 text-center text-sm mx-auto block"></td>
-                            <td class="p-2"><input type="text" name="rejected" id="input-rejected" value="{{ old('rejected', $data->rejected) }}" class="w-32 border rounded-md p-1 text-center text-sm mx-auto block"></td>
+                            <td class="p-2"><input type="text" name="open" id="input-open" value="{{ old('open', $data->open) }}" class="w-20 sm:w-32 border rounded-md p-1 text-center text-sm mx-auto block"></td>
+                            <td class="p-2"><input type="text" name="submitted" id="input-submitted" value="{{ old('submitted', $data->submitted) }}" class="w-20 sm:w-32 border rounded-md p-1 text-center text-sm mx-auto block"></td>
+                            <td class="p-2"><input type="text" name="rejected" id="input-rejected" value="{{ old('rejected', $data->rejected) }}" class="w-20 sm:w-32 border rounded-md p-1 text-center text-sm mx-auto block"></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <div class="mt-4 flex justify-end">
-            <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-lg shadow-sm transition">
+        <div class="mt-4 flex justify-end w-full">
+            <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white px-4 sm:px-6 py-2 rounded-lg shadow-sm transition w-full sm:w-auto">
                 Simpan Perubahan
             </button>
         </div>

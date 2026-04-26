@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Groundcheck PLN</title>
@@ -10,11 +10,27 @@
             darkMode: 'class'
         }
     </script>
+    <script>
+        (function () {
+            const theme = localStorage.getItem('theme');
+
+            if (!theme) {
+                // default dark
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
+
 </head>
 
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -139,8 +155,13 @@
 
             @guest
             <a href="{{ route('login') }}" 
-                class="px-4 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm">
-                Login
+                class="px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200
+
+                {{ request()->is('login') 
+                    ? 'bg-blue-800 text-white hover:bg-blue-900 dark:bg-blue-800 dark:hover:bg-blue-900'
+                    : 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700' }}">
+                
+                Admin
             </a>
             @endguest
 
@@ -201,39 +222,31 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 <script>
-(function () {
-    const html = document.documentElement;
-    const toggle = document.getElementById('darkToggle');
-    const iconSun = document.getElementById('iconSun');
-    const iconMoon = document.getElementById('iconMoon');
+    (function () {
+        const html = document.documentElement;
+        const toggle = document.getElementById('darkToggle');
+        const iconSun = document.getElementById('iconSun');
+        const iconMoon = document.getElementById('iconMoon');
 
+        // sync icon sesuai theme
+        function updateIcon() {
+            const isDark = html.classList.contains('dark');
 
-    // Default to dark mode if no theme is set
-    if (!localStorage.getItem('theme')) {
-        localStorage.setItem('theme', 'dark');
-    }
-    if (localStorage.getItem('theme') === 'dark') {
-        html.classList.add('dark');
-        iconSun.classList.remove('hidden');
-        iconMoon.classList.add('hidden');
-    } else {
-        html.classList.remove('dark');
-        iconSun.classList.add('hidden');
-        iconMoon.classList.remove('hidden');
-    }
+            iconSun.classList.toggle('hidden', !isDark);
+            iconMoon.classList.toggle('hidden', isDark);
+        }
 
-    toggle.addEventListener('click', function () {
-        html.classList.toggle('dark');
+        updateIcon();
 
-        const isDark = html.classList.contains('dark');
+        toggle.addEventListener('click', function () {
+            html.classList.toggle('dark');
 
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            const isDark = html.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
 
-        // swap icon
-        iconSun.classList.toggle('hidden');
-        iconMoon.classList.toggle('hidden');
-    });
-})();
+            updateIcon();
+        });
+    })();
 </script>
 </body>
 </html>
